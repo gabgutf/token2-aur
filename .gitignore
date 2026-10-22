@@ -2,4 +2,6 @@
 
 !.gitignore
 !LICENSE
+
+!makepkgbuilds.py
 !metadata.yml
