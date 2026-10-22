@@ -5,3 +5,6 @@
 
 !makepkgbuilds.py
 !metadata.yml
+
+!packages/
+!packages/**

@@ -1,0 +1,64 @@
+[%- macro bash_quoted_string_array(name, data) -%]
+[%- if data -%]
+[[ name ]]=(
+[%- for entry in data %]
+	"[[ entry ]]"
+[%- endfor %]
+)
+[%- endif -%]
+[%- endmacro -%]
+
+[%- macro bash_string_array(name, data) -%]
+[%- if data -%]
+[[ name ]]=(
+	[[ data | join("\n\t") ]]
+)
+[%- endif -%]
+[%- endmacro -%]
+
+
+[%- macro base_package(pkgname="", pkgdesc="", provides=[], conflicts=[], arch=["any"], sources=[], depends=[], makedepends=[], validpgpkeys=[], options=[]) -%]
+[%- for name in maintainers %]
+# Maintainer: [[ name ]]
+[% endfor %]
+pkgname=[[ pkgname ]]
+pkgdesc="[[ pkgdesc ]]"
+
+[[ bash_string_array("provides", provides) ]]
+[[ bash_string_array("conflicts", conflicts) ]]
+
+pkgver=[[ version ]]
+pkgrel=[[ release ]]
+
+[[ bash_string_array("arch", arch) ]]
+url="[[ url ]]"
+license=("[[ license ]]")
+
+[[ bash_string_array("depends", depends) ]]
+[[ bash_string_array("makedepends", makedepends) ]]
+
+[[ bash_quoted_string_array("source", sources | map(attribute="url")) ]]
+[[ bash_quoted_string_array("sha512sums", sources | map(attribute="sha512sum", default="SKIP")) ]]
+[[ bash_string_array("validpgpkeys", validpgpkeys) ]]
+
+[[ bash_string_array("options", options) ]]
+
+[% endmacro %]
+
+[%- macro bin_package(pkgbase="", conflicts=[], sources=[]) -%]
+[[- base_package(
+	pkgname=pkgbase + "-bin",
+	sources=sources + [ binaries.tar, binaries.tar_sig ],
+	validpgpkeys=binaries.pgp_keys,
+	conflicts=conflicts + [ pkgbase ],
+	**kwargs
+) -]]
+
+package() {
+	for filedir in *; do
+		if [ ! -e "${pkgdir}/${filedir}" ]; then
+			cp -ra "${filedir}" "${pkgdir}"
+		fi
+	done
+}
+[% endmacro %]
