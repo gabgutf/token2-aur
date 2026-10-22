@@ -1,0 +1,19 @@
+maintainers:
+  - "Gabriel Gutiérrez Fuentes <me@gab.gf>"
+version: 0.2.0
+release: 1
+
+pkgbase: token2-piv
+url: "https://github.com/token2/fido2-manage"
+license: "BSD-2-Clause"
+
+sources:
+  fido2manage:
+    url: "https://github.com/token2/fido2-manage/archive/refs/tags/${pkgver}.tar.gz"
+    sha512sum: "d6fe562ba08106b3da1ca9c0612f9efc43914d6ec6d41ea0d548c20bb25d019fb95591085375823be5f69252833bf6e26fc027c58489a7df4bc4c949b37a7c93"
+
+  libfido2:
+    # libfido2 1.15.0 isn't the latest, but it's what upstream uses for its
+    # custom patches.
+    url: "https://developers.yubico.com/libfido2/Releases/libfido2-1.15.0.tar.gz"
+    sha512sum: "cca142e3b3b7e216289934785fcad6be3bcd344001445f04fcecf01d4f568523b949c7204eec2f32faf12605a98c7496b9f64bb34d6a312342fa997689e61635"
