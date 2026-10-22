@@ -1,0 +1,56 @@
+[% from "base.j2" import base_package with context %]
+[#
+	We're compiling with GCC and eventually Rust (LLVM),
+	we can't use LTO since their IRs are incompatible.
+#]
+[[- base_package(
+	pkgname		= pkgbase + "-gui",
+	pkgdesc		= "Token2 FIDO2 key management GUI with OTP and PIV features.",
+	provides	= [ pkgbase + "-gui" ],
+	sources		= [ sources.fido2manage, sources.libfido2 ],
+	depends		= [
+		"gdk-pixbuf2", "cairo", "gtk3", "wayland", "webkit2gtk-4.1", "libsoup3",
+		pkgbase + "-lib",
+	],
+	makedepends	= [ "cmake", "help2man", "cargo-tauri" ],
+	options		= [ "!lto" ]
+) -]]
+
+build() {
+	# The GUI requires a patched libfido2
+	FIDO2_DIR=`find -maxdepth 1 -type d -name "libfido2-*"`
+	pushd "${FIDO2_DIR}"
+	patch -p1 < "../fido2-manage-${pkgver}/libfido2-token2.patch"
+
+	cmake \
+		-S . \
+		-B build/ \
+		-DBUILD_TOOLS=OFF \
+		-DBUILD_EXAMPLES=OFF \
+		-DUSE_PCSC=ON \
+		-DBUILD_STATIC_LIBS=ON \
+		-DBUILD_SHARED_LIBS=OFF
+	cmake --build build/ --target fido2
+	popd
+
+	export FIDO2_LIB_DIR=`realpath ${FIDO2_DIR}/build/src`
+	export FIDO2_LINK_STATIC=1
+
+	pushd "fido2-manage-${pkgver}/token2-piv-gui/src-tauri/"
+	# Build system hack for Tauri. Sometimes bundles shared libraries from 'lib/'
+	# and outright fails if it's empty.
+	mkdir -p libs/
+	touch libs/.keep
+	RUSTFLAGS="--remap-path-prefix=$srcdir=" cargo build \
+		--release \
+		--bin token2-key-manager \
+		--bin fido2-manage
+	popd
+}
+
+package() {
+	pushd "fido2-manage-${pkgver}/token2-piv-gui/src-tauri/target/release/"
+	install -m755 -d "${pkgdir}/usr/bin/"
+	install -m755 token2-key-manager fido2-manage "${pkgdir}/usr/bin/"
+	popd
+}
