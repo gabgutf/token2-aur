@@ -1,0 +1,24 @@
+[% from "base.j2" import base_package with context %]
+[[- base_package(
+	pkgname		= pkgbase + "-lib",
+	pkgdesc		= "Token2 FIDO2 hardware key library.",
+	provides	= [ pkgbase + "-lib" ],
+	sources		= [ sources.fido2manage ],
+	depends		= [ "openssl", "pcsclite", "zlib" ],
+	makedepends	= [ "cmake", "help2man" ],
+	options		= [ "!lto" ]
+) -]]
+
+build() {
+	[% filter indent(width="\t") -%]
+	[%- include "common/lib-and-tool-configure.sh" -%]
+	[%- endfilter %]
+
+	cd "fido2-manage-${pkgver}/build" > /dev/null
+	cmake --build . --target t2piv_shared
+}
+
+package() {
+	cd "fido2-manage-${pkgver}/build"
+	DESTDIR="${pkgdir}" make -C lib/ install
+}

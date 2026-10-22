@@ -1,0 +1,23 @@
+[% from "base.j2" import base_package with context %]
+[[- base_package(
+	pkgname		= pkgbase + "-tool",
+	pkgdesc		= "Token2 FIDO2 key management CLI tool with OTP and PIV features.",
+	provides	= [ pkgbase + "-tool" ],
+	sources		= [ sources.fido2manage ],
+	depends		= [ pkgbase + "-lib" ],
+	makedepends	= [ "cmake", "help2man" ],
+) -]]
+
+build() {
+	[% filter indent(width="\t") -%]
+	[%- include "common/lib-and-tool-configure.sh" -%]
+	[%- endfilter %]
+
+	cd "fido2-manage-${pkgver}/build" > /dev/null
+	cmake --build . --target token2-piv-tool token2-piv-tool-man
+}
+
+package() {
+	cd "fido2-manage-${pkgver}/build"
+	DESTDIR="${pkgdir}" make -C tool/ install
+}
