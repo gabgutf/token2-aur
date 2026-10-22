@@ -1,0 +1,75 @@
+name: Generate PGP key
+
+on:
+  workflow_dispatch:
+    inputs:
+      key_name:
+        description: "Key name"
+        required: true
+        type: string
+      email_address:
+        description: "Email address of the PGP key"
+        required: true
+        type: string
+      revoker_pgp_key:
+        description: "Revoker PGP fingerprint (prefixed with algorithm: '1:$FINGERPRINT')"
+        required: true
+        type: string
+
+jobs:
+  generate-pgp-key:
+    name: Generate PGP key
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Generate PGP key
+        run: |
+          gpg --batch --gen-key <<EOF
+          %no-protection
+          Key-Type: RSA
+          Key-Length: 4096
+          Key-Usage: sign
+          Revoker: ${{ inputs.revoker_pgp_key }}
+          Name-Real: ${{ inputs.key_name }}
+          Name-Comment: ${{ github.server_url }}/${{ github.repository }}
+          Name-Email: ${{ inputs.email_address }}
+          Expire-Date: 0
+          %commit
+          EOF
+
+          gpg --armor --export > key.pgp
+          gpg --armor --export-secret-keys > privkey.pgp
+
+
+      - name: Save PGP key as secret
+        env:
+          GH_TOKEN: ${{ secrets.PGP_GEN_ACCESS_TOKEN }}
+        run: |
+          gh secret set --env release RELEASE_SIGNING_KEY < privkey.pgp
+          rm privkey.pgp
+
+
+      - name: Generate summary
+        run: |
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+          # PGP generation summary
+
+          ### Key information
+
+          \`\`\`
+          $(gpg --show-keys key.pgp)
+          \`\`\`
+
+          ### Revoker
+
+          \`\`\`
+          $(echo ${{ inputs.revoker_pgp_key }} | sed 's/.*://')
+          \`\`\`
+
+          ### Public key
+
+          \`\`\`
+          $(cat key.pgp)
+          \`\`\`
