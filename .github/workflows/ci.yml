@@ -1,0 +1,71 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - master
+
+
+jobs:
+  build:
+    name: Build packages
+    if: |
+      github.event_name != 'pull_request' ||
+      github.actor != 'github-actions[bot]'
+
+    runs-on: ubuntu-latest
+    container: archlinux/archlinux
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          pacman -Sy --noconfirm base-devel python-pip sudo nodejs
+          python -m venv venv
+          . venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Create build user
+        run: |
+          useradd build -m
+          passwd -d build
+          echo 'build ALL=(ALL) ALL' >> /etc/sudoers
+
+      - name: Prepare PKGBUILDs
+        run: |
+          . venv/bin/activate
+          python src/makepkgbuilds.py
+          chown build:build -R output/
+
+      - name: Build packages
+        run: |
+          mkdir -p output/build/
+          PKGDEST="$(realpath output/build/)"
+          chown build:build -R "${PKGDEST}"
+
+          cd output/
+          for package in lib tool gui; do
+            sudo -u build \
+            PKGDEST="${PKGDEST}" \
+            PACKAGER="Gabriel Gutiérrez Fuentes <contact@gab.gf>" \
+            PKGEXT=".pkg.tar.xz" \
+            makepkg \
+            -sip PKGBUILD-${package} \
+            --noconfirm
+          done
+
+          cd build/
+          for file in *; do
+            mv "${file}" `echo "${file}" | sed 's/-any\.pkg\.tar\.xz$/-x86_64\.pkg\.tar\.xz/'`
+          done
+
+          cd ../
+          cp PKGBUILD-* "${PKGDEST}/"
+
+      - uses: actions/upload-artifact@v7
+        name: Save built packages
+        with:
+          path: output/build/*
+          if-no-files-found: error
