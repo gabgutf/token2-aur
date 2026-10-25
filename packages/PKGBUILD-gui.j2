@@ -49,8 +49,34 @@ build() {
 }
 
 package() {
-	pushd "fido2-manage-${pkgver}/token2-piv-gui/src-tauri/target/release/"
+	cd "fido2-manage-${pkgver}/token2-piv-gui/src-tauri/"
+
+	pushd "target/release/"
 	install -m755 -d "${pkgdir}/usr/bin/"
 	install -m755 token2-key-manager fido2-manage "${pkgdir}/usr/bin/"
 	popd
+
+	install -m755 -d "${pkgdir}/usr/share/pixmaps/"
+	install -m755 -d "${pkgdir}/usr/share/applications/"
+	install -Dm644 icons/icon.png "${pkgdir}/usr/share/pixmaps/token2-key-manager.png"
+
+	install -Dm644 /dev/stdin "${pkgdir}/usr/share/applications/token2-key-manager.desktop" <<-EOF
+		[Desktop Entry]
+		Type=Application
+		Version=0.2.0
+		Categories=Utility;HardwareSettings;Security;
+
+		Exec=/usr/bin/token2-key-manager
+		Icon=token2-key-manager
+		Terminal=false
+
+		Name=Token2 Key Manager
+		Name[es]=Token2 Key Manager
+
+		Comment=Token2 hardware key management companion app
+		Comment[es]=Aplicación de gestión de llaves hardware Token2
+
+		Keywords=Token2;Key;
+		Keywords[es]=Token2;Key;Llave;
+	EOF
 }
