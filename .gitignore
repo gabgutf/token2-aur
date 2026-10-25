@@ -3,8 +3,13 @@
 !.gitignore
 !LICENSE
 
-!makepkgbuilds.py
 !metadata.yml
-
 !packages/
 !packages/**
+
+!src/
+!src/**
+src/__pycache__/
+
+!.github/
+!.github/**
