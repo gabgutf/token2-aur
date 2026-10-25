@@ -57,10 +57,9 @@ pkgbase="[[ pkgbase ]]"
 ) -]]
 
 package() {
-	for filedir in *; do
-		if [ ! -e "${pkgdir}/${filedir}" ]; then
-			cp -ra "${filedir}" "${pkgdir}"
-		fi
-	done
+	tar xf "${srcdir}/[[ pkgbase ]]-${pkgver}-${pkgrel}-${CARCH}.pkg.tar.xz" -C "${pkgdir}"
+	rm "${pkgdir}/.PKGINFO"
+	rm "${pkgdir}/.BUILDINFO"
+	rm "${pkgdir}/.MTREE"
 }
 [% endmacro %]
