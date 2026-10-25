@@ -1,7 +1,7 @@
 maintainers:
   - "Gabriel Gutiérrez Fuentes <me@gab.gf>"
 version: 0.2.0
-release: 1
+release: 2
 
 pkgbase: token2-piv
 url: "https://github.com/token2/fido2-manage"
