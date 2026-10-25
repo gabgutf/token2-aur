@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0-2](https://github.com/gabgutf/token2-aur/compare/v0.2.0-1...v0.2.0-2) (2026-10-25)
+
+
+### Bug fixes
+
+* conflicting files in *-bin packages ([4e4e713](https://github.com/gabgutf/token2-aur/commit/4e4e713ffaf2f3501cd2135519f05596063bb256))
+
 ## [0.2.0-1](https://github.com/gabgutf/token2-aur/compare/v0.2.0-1...v0.2.0-1) (2026-10-25)
 
 
