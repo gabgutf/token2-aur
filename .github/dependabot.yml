@@ -8,3 +8,21 @@ updates:
       - gabgutf
     commit-message:
       prefix: "chore(dep): "
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    assignees:
+      - gabgutf
+    commit-message:
+      prefix: "chore(dep)"
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    assignees:
+      - gabgutf
+    commit-message:
+      prefix: "chore(dep)"
