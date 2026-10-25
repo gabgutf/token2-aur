@@ -1,0 +1,6 @@
+{
+	"name": "token2-aur",
+	"dependencies": {
+		"release-please":"^17.11.2"
+	}
+}

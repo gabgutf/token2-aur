@@ -11,5 +11,10 @@
 !src/**
 src/__pycache__/
 
+!release-please-config.json
+!.release-please-manifest.json
+!package.json
+!package-lock.json
+!requirements.txt
 !.github/
 !.github/**

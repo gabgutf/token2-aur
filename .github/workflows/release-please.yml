@@ -1,0 +1,157 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  should-release:
+    name: Check if making release or PR
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.create-release-check.outputs.result }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: |
+          npm -g install
+          pip install -r requirements.txt
+
+      - name: Check if making release or updating PR
+        id: create-release-check
+        env:
+          GIT_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if python src/release-please.py release shouldcreate; then
+            echo "result=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "result=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+
+  update-pr:
+    name: Update release PR
+    runs-on: ubuntu-latest
+    needs: [should-release]
+    if: needs.should-release.outputs.result == 'false'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-tags: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: |
+          npm -g install
+          pip install -r requirements.txt
+
+      - name: Bump release if required
+        id: release-bump
+        run: |
+          # Only bump if a previous release already exists
+          if ! python src/versionman.py tag get; then
+            echo "No previous release found"
+            echo "result=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          if !python src/versionman.py tag versionchanged; then
+            echo "result=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          echo "Bumping release version"
+          echo "result=true" >> "${GITHUB_OUTPUT}"
+          python src/versionman.py modify bump
+
+      - name: Update release-please PR
+        env:
+          GIT_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(python src/versionman.py get full)
+          python src/release-please.py pr update "${VERSION}"
+
+      - name: Create release bump commit
+        if: steps.release-bump.outputs.result == 'true'
+        env:
+          GIT_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          GIT_BRANCH=$(python src/release-please.py pr branch)
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git pull
+          git checkout "${GIT_BRANCH}"
+          git add metadata.yml
+          git commit --amend --no-edit
+          git push --force
+
+
+  create-release:
+    name: Release packages
+    runs-on: ubuntu-latest
+    environment: release
+    needs: [should-release]
+    if: needs.should-release.outputs.result == 'true'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: |
+          npm -g install
+          pip install -r requirements.txt
+
+      - name: Import PGP key
+        env:
+          RELEASE_SIGNING_KEY: ${{ secrets.RELEASE_SIGNING_KEY }}
+        run: |
+          mkdir -p ~/.gnupg/
+          echo "${RELEASE_SIGNING_KEY}" > ~/.gnupg/key.pgp
+          gpg --import ~/.gnupg/key.pgp
+          rm ~/.gnupg/key.pgp
+
+      - name: Get built packages
+        uses: actions/download-artifact@v8
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: output/
+
+      - name: Sign packages
+        run: |
+          cd output/
+          for file in *; do
+            gpg --detach-sign "${file}"
+          done
+
+      - name: Create release
+        env:
+          GIT_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python src/release-please.py release create
+
+      - name: Upload artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(python src/versionman.py get full)
+          cd output/
+          for file in *; do
+            gh release upload "v${VERSION}" "${file}" --clobber
+          done
