@@ -4,8 +4,8 @@
 	pkgdesc		= "Token2 FIDO2 hardware key library.",
 	provides	= [ pkgbase + "-lib" ],
 	sources		= [ sources.fido2manage ],
-	depends		= [ "openssl", "pcsclite", "zlib" ],
-	makedepends	= [ "cmake", "help2man" ],
+	depends		= [ "libcbor", "openssl", "pcsclite", "zlib" ],
+	makedepends	= [ "cmake", "check", "help2man" ],
 	options		= [ "!lto" ]
 ) -]]
 
