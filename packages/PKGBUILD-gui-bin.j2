@@ -1,0 +1,10 @@
+[% from "base.j2" import bin_package with context %]
+[[- bin_package(
+	pkgbase		= pkgbase + "-gui",
+	pkgdesc		= "Token2 FIDO2 key management GUI with OTP and PIV features.",
+	provides	= [ pkgbase + "-gui" ],
+	depends		= [
+		"gdk-pixbuf2", "cairo", "gtk3", "wayland", "webkit2gtk-4.1", "libsoup3",
+		pkgbase + "-lib",
+	],
+) -]]

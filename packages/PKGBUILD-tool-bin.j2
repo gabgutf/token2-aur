@@ -1,0 +1,7 @@
+[% from "base.j2" import bin_package with context %]
+[[- bin_package(
+	pkgbase		= pkgbase + "-tool",
+	pkgdesc		= "Token2 FIDO2 key management CLI tool with OTP and PIV features.",
+	provides	= [ pkgbase + "-tool" ],
+	depends		= [ pkgbase + "-lib" ],
+) -]]

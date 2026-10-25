@@ -15,6 +15,12 @@ binaries:
   pgp_keys:
     - "39E817D3FD94AB0D1B0471A0F61EC389BD1EAFBC"
 
+  tar:
+    url: "https://github.com/gabgutf/token2-aur/releases/download/v${pkgver}-${pkgrel}/${pkgbase}-${pkgver}-${pkgrel}-${CARCH}.pkg.tar.xz"
+
+  tar_sig:
+    url: "https://github.com/gabgutf/token2-aur/releases/download/v${pkgver}-${pkgrel}/${pkgbase}-${pkgver}-${pkgrel}-${CARCH}.pkg.tar.xz.sig"
+
 sources:
   fido2manage:
     url: "https://github.com/token2/fido2-manage/archive/refs/tags/${pkgver}.tar.gz"

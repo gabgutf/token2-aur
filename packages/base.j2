@@ -46,11 +46,13 @@ license=("[[ license ]]")
 [% endmacro %]
 
 [%- macro bin_package(pkgbase="", conflicts=[], sources=[]) -%]
+pkgbase="[[ pkgbase ]]"
 [[- base_package(
 	pkgname=pkgbase + "-bin",
 	sources=sources + [ binaries.tar, binaries.tar_sig ],
 	validpgpkeys=binaries.pgp_keys,
 	conflicts=conflicts + [ pkgbase ],
+	arch=[ "x86_64" ],
 	**kwargs
 ) -]]
 
