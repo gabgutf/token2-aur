@@ -7,6 +7,14 @@ pkgbase: token2-piv
 url: "https://github.com/token2/fido2-manage"
 license: "BSD-2-Clause"
 
+binaries:
+  # Key generated and stored on GitHub Actions.
+  # Only release workflows can access it.
+  # Proof:
+  #   https://github.com/gabgutf/token2-aur/actions/runs/40145842783/attempts/1#summary-121026879230
+  pgp_keys:
+    - "39E817D3FD94AB0D1B0471A0F61EC389BD1EAFBC"
+
 sources:
   fido2manage:
     url: "https://github.com/token2/fido2-manage/archive/refs/tags/${pkgver}.tar.gz"
