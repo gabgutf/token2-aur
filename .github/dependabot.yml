@@ -7,7 +7,7 @@ updates:
     assignees:
       - gabgutf
     commit-message:
-      prefix: "chore(dep): "
+      prefix: "bump"
 
   - package-ecosystem: npm
     directory: /
@@ -16,7 +16,7 @@ updates:
     assignees:
       - gabgutf
     commit-message:
-      prefix: "chore(dep)"
+      prefix: "bump"
 
   - package-ecosystem: pip
     directory: /
@@ -25,4 +25,4 @@ updates:
     assignees:
       - gabgutf
     commit-message:
-      prefix: "chore(dep)"
+      prefix: "bump"
