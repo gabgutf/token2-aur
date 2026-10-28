@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.1-1](https://github.com/gabgutf/token2-aur/compare/v0.2.0-2...v0.2.1-1) (2026-10-28)
+
+
+### Package updates
+
+* update Token2 to 0.2.1 ([cc27b6e](https://github.com/gabgutf/token2-aur/commit/cc27b6e9e082ce87b34360521dcbf6068286376d))
+
+
+### Bug fixes
+
+* dependabot PR prefix ([f756cb0](https://github.com/gabgutf/token2-aur/commit/f756cb051a1851fb39d1c393a2e4319005875f71))
+* release please version check ([a2794ee](https://github.com/gabgutf/token2-aur/commit/a2794ee9c2df4291c394027c99f3ef087af8f3c5))
+
 ## [0.2.0-2](https://github.com/gabgutf/token2-aur/compare/v0.2.0-1...v0.2.0-2) (2026-10-25)
 
 
