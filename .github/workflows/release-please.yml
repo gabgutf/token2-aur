@@ -68,7 +68,7 @@ jobs:
             exit 0
           fi
 
-          if !python src/versionman.py tag versionchanged; then
+          if python src/versionman.py tag versionchanged; then
             echo "result=false" >> "${GITHUB_OUTPUT}"
             exit 0
           fi
