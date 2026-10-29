@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1-2](https://github.com/gabgutf/token2-aur/compare/v0.2.1-1...v0.2.1-2) (2026-10-29)
+
+
+### New features
+
+* make PGP workflow commit key and summary ([e66221d](https://github.com/gabgutf/token2-aur/commit/e66221dbdd7317a763a34500529041c74a37daec))
+
+
+### Documentation
+
+* add PGP key in-tree ([61d562c](https://github.com/gabgutf/token2-aur/commit/61d562c93370cc09b7206507e3842e6fee7f758e))
+
 ## [0.2.1-1](https://github.com/gabgutf/token2-aur/compare/v0.2.0-2...v0.2.1-1) (2026-10-28)
 
 
