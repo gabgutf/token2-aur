@@ -39,16 +39,16 @@ jobs:
           %commit
           EOF
 
-          gpg --armor --export > key.pgp
-          gpg --armor --export-secret-keys > privkey.pgp
+          gpg --armor --export > release-key.asc
+          gpg --armor --export-secret-keys > privkey.asc
 
 
       - name: Save PGP key as secret
         env:
           GH_TOKEN: ${{ secrets.PGP_GEN_ACCESS_TOKEN }}
         run: |
-          gh secret set --env release RELEASE_SIGNING_KEY < privkey.pgp
-          rm privkey.pgp
+          gh secret set --env release RELEASE_SIGNING_KEY < privkey.asc
+          rm privkey.asc
 
 
       - name: Generate summary
@@ -59,7 +59,7 @@ jobs:
           ### Key information
 
           \`\`\`
-          $(gpg --show-keys key.pgp)
+          $(gpg --show-keys release-key.asc)
           \`\`\`
 
           ### Revoker
@@ -71,5 +71,15 @@ jobs:
           ### Public key
 
           \`\`\`
-          $(cat key.pgp)
+          $(cat release-key.asc)
           \`\`\`
+
+
+      - name: Commit key
+        run: |
+          cp $GITHUB_STEP_SUMMARY release-key.md
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add release-key.md release-key.asc
+          git commit -m "chore: generate PGP key"
+          git push
