@@ -4,6 +4,9 @@
 !LICENSE
 !README.md
 
+!release-key.asc
+!release-key.md
+
 !metadata.yml
 !packages/
 !packages/**

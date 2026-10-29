@@ -49,7 +49,13 @@ If you want to skip compilation and instead use prebuilt packages, download thes
 - `PKGBUILD-tool-bin`
 - `PKGBUILD-gui-bin`
 
-Then, download the PGP signing key from [here](https://github.com/gabgutf/token2-aur/actions/runs/40145842783/attempts/1#summary-121026879230), import it into your keyring, and run the same commands:
+Then, import the PGP signing key from [here](release-key.asc), or download it from a keyserver by running:
+
+```shell
+$ gpg --recv-keys 39E817D3FD94AB0D1B0471A0F61EC389BD1EAFBC
+```
+
+Finally, run these commands to install the three packages:
 
 ```shell
 $ makepkg -sip PKGBUILD-lib-bin
