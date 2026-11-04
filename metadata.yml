@@ -1,6 +1,6 @@
 maintainers:
   - "Gabriel Gutiérrez Fuentes <me@gab.gf>"
-version: 0.2.1
+version: 0.2.2
 release: 1
 
 pkgbase: token2-piv
@@ -22,7 +22,7 @@ binaries:
 sources:
   fido2manage:
     url: "https://github.com/token2/fido2-manage/archive/refs/tags/${pkgver}.tar.gz"
-    sha512sum: "0f9d0039e11c9fa1450f281e7525544abf3f76309f0c22d4db0f409a026c105338aa1d2ebaed771e8f9daa96940b7c475c4d8db09c297182bd32d2b327a2d8aa"
+    sha512sum: "d1c48d27794d70d13f7e27ab14b219b7751d41be14c03affeb9943d02c685fed7fa09b041c0fb6ae9c275c9cbbe90e194b929a687765dee37edb5ea91e76c00a"
 
   libfido2:
     # libfido2 1.15.0 isn't the latest, but it's what upstream uses for its
